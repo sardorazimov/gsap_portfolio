@@ -1,0 +1,58 @@
+@import 'compass/css3';
+
+$cube-edge: 3em;
+
+body {
+	margin: 0;
+	font-size: 6.5vmin;
+	height: 500vh;
+	background-color: #0e100f;
+}
+
+[class*='cube'] { position: absolute }
+
+.cubeContainer {
+	position: fixed;
+}
+
+.cubeOfCubes {
+	top: 50vh;
+	left: 50vw;
+	perspective: 25em;
+	will-change: transform;
+}
+
+.cube {
+	top: calc(50% - #{$cube-edge / 2}); 
+	left: calc(50% - #{$cube-edge / 2});
+	width: $cube-edge; 
+	height: $cube-edge;
+	transform: translate(var(--x), var(--y))
+		// Hack to do z percent
+		rotateY(-90deg) translateX(var(--z)) rotateY(90deg);
+	transform-style: preserve-3d;
+	will-change: transform;
+
+	&__face {
+		width: $cube-edge; 
+		height: $cube-edge;
+		box-shadow: inset 0 0 0 2px #fffce1;
+		--i: 0;
+		transform: rotate3d(var(--i), calc(1 - var(--i)), 0, calc(var(--m, 0)*90deg)) 
+			translateZ(.5*$cube-edge);
+
+		&:nth-child(n + 5) { --i: 1 }
+
+		@for $f from 1 to 6 {
+			&:nth-child(#{$f + 1}) { --m: if($f < 4, $f, pow(-1, $f)) }
+		}
+	}
+	
+	@for $i from 1 to 28 {
+		&:nth-child(#{$i}) { 
+			--x: (($i % 3) * -100%) + 100%;
+			--y: (floor($i % 9 / 3) * -100%) + 100%;
+			--z: (floor($i / 9 % 3) * -100%) + 100%;
+		}
+	}
+}
